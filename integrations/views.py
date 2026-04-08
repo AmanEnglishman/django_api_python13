@@ -1,4 +1,5 @@
 import requests
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -51,3 +52,17 @@ class CurrencyView(APIView):
             }
 
             return Response(currency_data)
+
+
+class HolidayView(APIView):
+    def get(self, request):
+        year = request.query_params.get("year", 2026)
+        country_code = request.query_params.get("code")
+        if not country_code:
+            return Response({'Error': 'Передайте код страны'}, status=status.HTTP_400_BAD_REQUEST)
+
+        url = f"https://date.nager.at/api/v3/PublicHolidays/{year}/{country_code}"
+        response = requests.get(url)
+
+        return Response(response.json())
+
